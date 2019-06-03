@@ -6,7 +6,8 @@
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "koa": "^2.7.0",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "torrent-search-api": "^2.0.9"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
