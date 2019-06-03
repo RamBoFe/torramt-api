@@ -1,30 +1,32 @@
 import fs from 'fs';
 import path from 'path';
 
-export const importRoutes = (koaRouter, pathDir, ignored) => {
-  const directory = [];
+export const importRoutes = (koaRouter, pathRootFolderRoutes, ignored) => {
+  const folder = [];
+  let koaRouterReturn = koaRouter;
 
-  fs.readdirSync(pathDir)
-    .filter(file => ignored.includes(file) === false)
-    .map(async (file) => {
-      const fileNameWithoutExt = file.replace(/\.mjs|.js/, '');
-
-      if (!fs.lstatSync(pathDir + '/' + file).isDirectory()) {
-        let pathRelative = path.relative('./helpers', pathDir);
-        pathRelative = path.join(pathRelative, fileNameWithoutExt).replace(/\\/g, '/');
-        const { default: Route } = await import(pathRelative);
-        const pathRootRoutes = pathRelative.replace(/\.+\/(\w+)\//, '');
-        koaRouter.use(`/${pathRootRoutes}`, Route);
+  fs.readdirSync(pathRootFolderRoutes)
+    .filter(content => !ignored.includes(content))
+    .map(async (content) => {
+      if (!fs.lstatSync(`${pathRootFolderRoutes}/${content}`).isDirectory()) {
+        const fileNameWithoutExt = content.replace(/\.mjs|.js/, '');
+        let pathFileRoutes = path.relative('./helpers', pathRootFolderRoutes);
+        pathFileRoutes = path
+          .join(pathFileRoutes, fileNameWithoutExt)
+          .replace(/\\/g, '/');
+        const { default: Route } = await import(pathFileRoutes);
+        const pathRootRoute = pathFileRoutes.replace(/\.+\/(\w+)\//, '');
+        koaRouterReturn.use(`/${pathRootRoute}`, Route);
       } else {
-        directory.push(pathDir + '/' + fileNameWithoutExt);
+        folder.push(`${pathRootFolderRoutes}/${content}`);
       }
     });
 
-  directory.map( async (d) => {
-    koaRouter = importRoutes(koaRouter, d, []);
+  folder.forEach((f) => {
+    koaRouterReturn = importRoutes(koaRouterReturn, f, []);
   });
 
-  return koaRouter;
+  return koaRouterReturn;
 };
 
 export default importRoutes;
