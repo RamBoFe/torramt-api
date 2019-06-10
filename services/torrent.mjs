@@ -9,7 +9,7 @@ const PRIVATE_PROVIDER_CONFIG = [
 ];
 
 function activeProviderIfExist(providerName, credentials = {}) {
-  const isProviderActive = TorrentSearchApi.isProviderActive(providerName);
+  let isProviderActive = TorrentSearchApi.isProviderActive(providerName);
 
   if (!isProviderActive) {
     const provider = TorrentSearchApi.getProviders()
@@ -25,9 +25,9 @@ function activeProviderIfExist(providerName, credentials = {}) {
     } else {
       TorrentSearchApi.enableProvider(providerName);
     }
-    return true;
+    isProviderActive = true;
   }
-  return false;
+  return isProviderActive;
 }
 
 export default async function searchTorrents(providerName, search) {
