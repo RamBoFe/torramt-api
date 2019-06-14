@@ -10,6 +10,7 @@ const CURRENT_FILE = path.basename(FILENAME);
 
 router = importRoutes(router, 'routes', [
   CURRENT_FILE,
+  '@eaDir',
 ]);
 
 export default router.routes();
