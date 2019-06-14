@@ -19,3 +19,12 @@ export default async function addTorrentToDl(torrentFile) {
     });
   return infos;
 }
+
+export async function getTorrents(fields) {
+  const { torrents } = await TransClient.get();
+  return torrents.map(
+    torrent => fields.map(
+      field => torrent[field],
+    ),
+  );
+}
