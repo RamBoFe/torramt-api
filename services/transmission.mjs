@@ -1,4 +1,5 @@
 import TransmissionClient from 'transmission-client';
+import pick from 'lodash.pick';
 
 const CONFIG = {
   host: 'alcyoneus.feralhosting.com',
@@ -23,8 +24,20 @@ export default async function addTorrentToDl(torrentFile) {
 export async function getTorrents(fields) {
   const { torrents } = await TransClient.get();
   return torrents.map(
-    torrent => fields.map(
-      field => torrent[field],
-    ),
+    torrent => pick(torrent, fields),
   );
+}
+
+export async function remove(hashString) {
+  const infos = await TransClient.remove(hashString, true);
+  return infos;
+}
+
+export async function start(hashString) {
+  const infos = await TransClient.start(hashString);
+  return infos;
+}
+export async function stop(hashString) {
+  const infos = await TransClient.stop(hashString);
+  return infos;
 }

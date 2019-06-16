@@ -1,5 +1,10 @@
 import Router from 'koa-router';
-import { getTorrents } from '../../../services/transmission';
+import {
+  getTorrents,
+  remove,
+  start,
+  stop,
+} from '../../../services/transmission';
 
 const FIELDS = [
   'id',
@@ -17,6 +22,21 @@ const router = new Router();
 
 router.get('/', async (ctx) => {
   ctx.body = await getTorrents(FIELDS);
+});
+
+router.get('/start/:hash', async (ctx) => {
+  const { hash } = ctx.params;
+  ctx.body = await start(hash);
+});
+
+router.get('/stop/:hash', async (ctx) => {
+  const { hash } = ctx.params;
+  ctx.body = await stop(hash);
+});
+
+router.get('/remove/:hash', async (ctx) => {
+  const { hash } = ctx.params;
+  ctx.body = await remove(hash);
 });
 
 export default router.routes();
