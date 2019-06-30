@@ -5,9 +5,11 @@
   "type": "module",
   "dependencies": {
     "@koa/cors": "^2.2.3",
+    "esm": "^3.2.25",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "lodash.pick": "^4.4.0",
+    "ssh2-sftp-client": "^2.5.0",
     "torrent-search-api": "^2.0.9",
     "transmission-client": "^1.0.0"
   },
