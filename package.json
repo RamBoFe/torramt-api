@@ -9,7 +9,9 @@
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "lodash.pick": "^4.4.0",
+    "nconf": "^0.10.0",
     "ssh2-sftp-client": "^2.5.0",
+    "syno": "^2.1.0",
     "torrent-search-api": "^2.0.9",
     "transmission-client": "^1.0.0"
   },
