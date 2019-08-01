@@ -17,37 +17,62 @@ const URI = `ftp://${FTP_USER}:${FTP_PWD}@alcyoneus.feralhosting.com/private/rto
 
 function createTaskSync(params) {
   return new Promise((resolve, reject) => {
-    nas.dl.createTask(params, (error, x) => {
-      console.log(x);
-      if (x === 0) {
-        reject(false);
+    nas.dl.createTask(params, (error, success) => {
+      if (error) {
+        reject(error);
       } else {
-        resolve(x);
+        resolve(success);
       }
     });
   });
 }
 function listTasksSync(params) {
   return new Promise((resolve, reject) => {
-    nas.dl.listTasks(params, (error, x) => {
-      console.log(x);
-      if (x === 0) {
-        reject(false);
+    nas.dl.listTasks(params, (error, success) => {
+      if (error) {
+        reject(error);
       } else {
-        resolve(x);
+        resolve(success);
+      }
+    });
+  });
+}
+
+function createFolderSync(params) {
+  return new Promise((resolve, reject) => {
+    nas.fs.createFolder(params, (error, success) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(success);
       }
     });
   });
 }
 
 router.get('/transfert', async (ctx) => {
-  const { path, type } = ctx.query;
-  console.log(path);
-  console.log(type);
+  const { path, type, createSubFolder } = ctx.query;
+  let dest = ctx.query.destination;
+  const hasSubFolder = !!createSubFolder;
 
-  const uri = `${URI}${path}`;
-  const ok = await createTaskSync({ uri, destination: 'music' });
-  ctx.body = 'Naass okkk';
+  if (hasSubFolder) {
+    const created = await createFolderSync({
+      folder_path: `/${dest}`,
+      name: createSubFolder,
+    });
+    ctx.assert(created, 500, 'Le répertoire n\' a pas pu être créé.');
+    dest = `${dest}/${createSubFolder}`;
+  }
+
+  try {
+    await createTaskSync({
+      uri: type !== 'd' ? `${URI}${path}` : `${URI}${path}/`,
+      destination: dest,
+    });
+    ctx.status = 204;
+  } catch (e) {
+    ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
+  }
 });
 
 export default router.routes();

@@ -1,10 +1,11 @@
 import TorrentSearchApi from 'torrent-search-api';
+import config from './config';
 
 const PRIVATE_PROVIDER_CONFIG = [
   {
     name: 'YggTorrent',
-    login: 'chancette',
-    pass: 'rivenBot19!',
+    login: config.get('ygg:user'),
+    pass: config.get('ygg:pwd'),
   },
 ];
 
