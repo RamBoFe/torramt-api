@@ -43,3 +43,8 @@ export async function dlTorrentFile(torrent) {
   const buffer = TorrentSearchApi.downloadTorrent(torrent);
   return buffer;
 }
+
+export async function torrentDetails(torrent) {
+  const details = await TorrentSearchApi.getTorrentDetails(torrent);
+  return details;
+}
