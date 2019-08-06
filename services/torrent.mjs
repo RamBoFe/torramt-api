@@ -32,14 +32,14 @@ function activeProviderIfExist(providerName, credentials = {}) {
 }
 
 export default async function searchTorrents(providerName, search) {
-  const config = PRIVATE_PROVIDER_CONFIG.find(p => p.name === providerName) || {};
-  const isActiveProvider = activeProviderIfExist(providerName, config);
+  const providerConfig = PRIVATE_PROVIDER_CONFIG.find(p => p.name === providerName) || {};
+  const isActiveProvider = activeProviderIfExist(providerName, providerConfig);
   const torrents = await TorrentSearchApi.search(search);
 
   return isActiveProvider ? torrents : [];
 }
 
 export async function dlTorrentFile(torrent) {
-  const torrentFile = await TorrentSearchApi.downloadTorrent(torrent);
-  return torrentFile;
+  const buffer = TorrentSearchApi.downloadTorrent(torrent);
+  return buffer;
 }
