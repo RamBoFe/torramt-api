@@ -1,10 +1,11 @@
 import TransmissionClient from 'transmission-client';
 import pick from 'lodash.pick';
+import config from './config';
 
 const CONFIG = {
   host: 'alcyoneus.feralhosting.com',
   username: '',
-  password: 'hFeRxu0FQqBYfWOo',
+  password: config.get('transmission:pwd'),
   url: '/jillnax/transmission/rpc',
   port: 443,
   ssl: true,

@@ -1,11 +1,11 @@
 import Ssh2SftpClient from 'ssh2-sftp-client';
-
+import config from './config';
 
 const FTP_CONFIG = {
   host: 'alcyoneus.feralhosting.com',
   port: '22',
-  username: 'jillnax',
-  password: 'saucisson83',
+  username: config.get('ftp:user'),
+  password: config.get('ftp:pwd'),
 };
 
 const DEFAULT_PATH = '/media/sdai1/jillnax/private/rtorrent/data';
