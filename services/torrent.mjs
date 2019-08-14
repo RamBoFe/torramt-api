@@ -1,7 +1,7 @@
-import TorrentSearchApi from 'torrent-search-api';
+import TorrentSearch from 'torrent-search-api';
 import config from './config';
 
-const PRIVATE_PROVIDER_CONFIG = [
+const PROVIDERS_CONFIG = [
   {
     name: 'YggTorrent',
     login: config.get('ygg:user'),
@@ -9,42 +9,31 @@ const PRIVATE_PROVIDER_CONFIG = [
   },
 ];
 
-function activeProviderIfExist(providerName, credentials = {}) {
-  let isProviderActive = TorrentSearchApi.isProviderActive(providerName);
-
-  if (!isProviderActive) {
-    const provider = TorrentSearchApi.getProviders()
-      .filter(p => p.name === providerName);
-
-    if (!provider.public) {
-      if (credentials
-        && (credentials.login && credentials.pass)) {
-        TorrentSearchApi.enableProvider(providerName, credentials.login, credentials.pass);
-      } else {
-        throw new Error('Private provider : keys \'login\' and \'pass\' missing.');
-      }
+(() => {
+  PROVIDERS_CONFIG.forEach((provider) => {
+    if (provider.login && provider.pass) {
+      TorrentSearch.enableProvider(provider.name, provider.name, provider.pass);
     } else {
-      TorrentSearchApi.enableProvider(providerName);
+      TorrentSearch.enableProvider(provider.name);
     }
-    isProviderActive = true;
-  }
-  return isProviderActive;
+  });
+})();
+
+export function getActiveProvidersWithCategories() {
+  return TorrentSearch.getActiveProviders();
 }
 
-export default async function searchTorrents(providerName, search) {
-  const providerConfig = PRIVATE_PROVIDER_CONFIG.find(p => p.name === providerName) || {};
-  const isActiveProvider = activeProviderIfExist(providerName, providerConfig);
-  const torrents = await TorrentSearchApi.search(search);
-
-  return isActiveProvider ? torrents : [];
+export default async function searchTorrents(search, category, ...providersName) {
+  const results = await TorrentSearch.search(providersName, search, category);
+  return results;
 }
 
 export async function dlTorrentFile(torrent) {
-  const buffer = TorrentSearchApi.downloadTorrent(torrent);
+  const buffer = await TorrentSearch.downloadTorrent(torrent);
   return buffer;
 }
 
-export async function torrentDetails(torrent) {
-  const details = await TorrentSearchApi.getTorrentDetails(torrent);
+export async function getTorrentDetails(torrent) {
+  const details = await TorrentSearch.getTorrentDetails(torrent);
   return details;
 }
