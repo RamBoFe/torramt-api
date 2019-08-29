@@ -31,3 +31,22 @@ export default async function list(path = '/') {
         .sort((a, b) => (a.name > b.name ? 1 : -1)),
     );
 }
+
+export async function calculateSize(path) {
+  const listItems = await list(path);
+
+  const sizeFiles = listItems
+    .filter(item => item.type !== 'd')
+    .reduce((acc, item) => acc + item.size, 0);
+
+  const sizeFolders = listItems
+    .filter(e => e.type === 'd')
+    .map(async (e) => {
+      const listFolder = await list(`${path}/${e.name}`);
+      return listFolder.reduce((acc, file) => acc + file.size, 0);
+    });
+
+  return Promise.all(sizeFolders).then(
+    item => sizeFiles + item.reduce((acc, size) => acc + size, 0),
+  );
+}
