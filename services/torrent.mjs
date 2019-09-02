@@ -12,7 +12,7 @@ const PROVIDERS_CONFIG = [
 (() => {
   PROVIDERS_CONFIG.forEach((provider) => {
     if (provider.login && provider.pass) {
-      TorrentSearch.enableProvider(provider.name, provider.name, provider.pass);
+      TorrentSearch.enableProvider(provider.name, provider.login, provider.pass);
     } else {
       TorrentSearch.enableProvider(provider.name);
     }
