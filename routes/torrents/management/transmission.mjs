@@ -15,7 +15,10 @@ const FIELDS = [
   'percentDone',
   'uploadRatio',
   'uploadedEver',
-  'isFinished',
+  'downloadedEver',
+  'rateDownload',
+  'rateUpload',
+  'leftUntilDone',
 ];
 
 const router = new Router();
