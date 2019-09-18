@@ -32,6 +32,22 @@ export default async function list(path = '/') {
     );
 }
 
+export async function del(path, type = 'd') {
+  const sftp = new Ssh2SftpClient();
+  await sftp.connect(FTP_CONFIG);
+
+  const remoteRessource = `${DEFAULT_PATH}/${path}`;
+
+  if (type === 'd') {
+    await sftp.rmdir(remoteRessource, true);
+  } else {
+    await sftp.delete(remoteRessource);
+  }
+
+  await sftp.end();
+}
+
+
 export async function calculateSize(path) {
   const listItems = await list(path);
 
