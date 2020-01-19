@@ -26,7 +26,7 @@ export async function getTorrents(fields) {
   const { torrents } = await TransClient.get();
   return torrents.map(
     torrent => pick(torrent, fields),
-  );
+  ).reverse();
 }
 
 export async function remove(hashString) {

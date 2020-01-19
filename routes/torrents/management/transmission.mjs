@@ -19,6 +19,8 @@ const FIELDS = [
   'rateDownload',
   'rateUpload',
   'leftUntilDone',
+  'doneDate',
+  'files',
 ];
 
 const router = new Router();
