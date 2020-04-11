@@ -12,7 +12,7 @@
     "nconf": "^0.10.0",
     "ssh2-sftp-client": "^2.5.0",
     "syno": "^2.1.0",
-    "torrent-search-api": "^2.0.9",
+    "torrent-search-api": "^2.1.1",
     "transmission-client": "^1.0.0"
   },
   "devDependencies": {
