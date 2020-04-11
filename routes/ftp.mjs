@@ -20,7 +20,7 @@ router.del('/delete', async (ctx) => {
     await del(path, type);
     ctx.status = 204;
   } catch (e) {
-    ctx.throw(500, `Impossible supprimer la ressource (${e.message}).`);
+    ctx.throw(500, `Impossible de supprimer la ressource (${e.message}).`);
   }
 });
 
