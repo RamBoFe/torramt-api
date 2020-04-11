@@ -23,7 +23,7 @@ export const importRoutes = (koaRouter, pathRootFolderRoutes, ignored) => {
     });
 
   folder.forEach((f) => {
-    koaRouterReturn = importRoutes(koaRouterReturn, f, []);
+    koaRouterReturn = importRoutes(koaRouterReturn, f, ignored);
   });
 
   return koaRouterReturn;
