@@ -4,8 +4,9 @@ import searchTorrents,
   dlTorrentFile,
   getTorrentDetails,
   getActiveProvidersWithCategories,
-} from '../services/torrent';
-import addTorrentToDl from '../services/transmission';
+} from '../services/torrent.mjs';
+
+import addTorrentToDl from '../services/transmission.mjs';
 
 const router = new Router();
 

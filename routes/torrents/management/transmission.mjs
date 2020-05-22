@@ -4,7 +4,7 @@ import {
   remove,
   start,
   stop,
-} from '../../../services/transmission';
+} from '../../../services/transmission.mjs';
 
 const FIELDS = [
   'id',

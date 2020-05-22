@@ -1,6 +1,6 @@
 import TransmissionClient from 'transmission-client';
 import pick from 'lodash.pick';
-import config from './config';
+import config from './config.mjs';
 
 const CONFIG = {
   host: 'alcyoneus.feralhosting.com',

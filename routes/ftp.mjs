@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import list, { calculateSize, del } from '../services/ftp';
+import list, { calculateSize, del } from '../services/ftp.mjs';
 
 const router = new Router();
 

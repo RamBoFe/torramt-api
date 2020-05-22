@@ -1,5 +1,5 @@
 import Ssh2SftpClient from 'ssh2-sftp-client';
-import config from './config';
+import config from './config.mjs';
 
 const FTP_CONFIG = {
   host: 'alcyoneus.feralhosting.com',

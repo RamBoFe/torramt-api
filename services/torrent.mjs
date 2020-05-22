@@ -1,5 +1,5 @@
 import TorrentSearch from 'torrent-search-api';
-import config from './config';
+import config from './config.mjs';
 
 const PROVIDERS_CONFIG = [
   {

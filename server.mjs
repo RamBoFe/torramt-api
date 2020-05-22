@@ -2,8 +2,8 @@ import Koa from 'koa';
 import cors from '@koa/cors';
 import fs from 'fs';
 import https from 'https';
-import routes from './routes/index';
-import config from './services/config';
+import routes from './routes/index.mjs';
+import config from './services/config.mjs';
 
 const app = new Koa();
 const PORT = 2223;
@@ -22,3 +22,5 @@ if (config.get('path_certificate')) {
 } else {
   app.listen(PORT);
 }
+
+console.log('Api Torrant en écoute.');

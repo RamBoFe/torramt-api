@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import Nas from 'syno';
-import config from '../services/config';
+import config from '../services/config.mjs';
 
 const router = new Router();
 const nas = new Nas({

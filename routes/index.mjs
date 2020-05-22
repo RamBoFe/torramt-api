@@ -1,6 +1,6 @@
 import path from 'path';
 import Router from 'koa-router';
-import { importRoutes } from '../helpers/route';
+import { importRoutes } from '../helpers/route.mjs';
 
 let router = new Router();
 

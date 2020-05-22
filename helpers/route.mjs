@@ -9,10 +9,9 @@ export const importRoutes = (koaRouter, pathRootFolderRoutes, ignored) => {
     .filter(content => !ignored.includes(content))
     .map(async (content) => {
       if (!fs.lstatSync(`${pathRootFolderRoutes}/${content}`).isDirectory()) {
-        const fileNameWithoutExt = content.replace(/\.mjs|.js/, '');
         let pathFileRoutes = path.relative('./helpers', pathRootFolderRoutes);
         pathFileRoutes = path
-          .join(pathFileRoutes, fileNameWithoutExt)
+          .join(pathFileRoutes, content)
           .replace(/\\/g, '/');
         const { default: Route } = await import(pathFileRoutes);
         const pathRootRoute = pathFileRoutes.replace(/\.+\/(\w+)\//, '');
