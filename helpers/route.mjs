@@ -14,7 +14,9 @@ export const importRoutes = (koaRouter, pathRootFolderRoutes, ignored) => {
           .join(pathFileRoutes, content)
           .replace(/\\/g, '/');
         const { default: Route } = await import(pathFileRoutes);
-        const pathRootRoute = pathFileRoutes.replace(/\.+\/(\w+)\//, '');
+        const pathRootRoute = pathFileRoutes
+          .replace(/\.+\/(\w+)\//, '')
+          .replace(/\.mjs|.js/, '');
         koaRouterReturn.use(`/${pathRootRoute}`, Route);
       } else {
         folder.push(`${pathRootFolderRoutes}/${content}`);
