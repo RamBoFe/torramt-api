@@ -1,0 +1,40 @@
+{
+    "node": {
+        "port": "",
+        "domain": "",
+        "protocol": "http",
+        "https": {
+            "key": "",
+            "cert": "",
+            "ca": ""
+        }
+    },
+    "nas": {
+        "protocol": "https",
+        "host": "",
+        "port": "",
+        "user": "",
+        "pwd": ""
+    },
+    "ftp": {
+        "host": "",
+        "port": "",
+        "user": "",
+        "pwd": "",
+        "default_path": "",
+        "uri": ""
+    },
+    "seedbox": {
+        "host": "",
+        "url": "",
+        "port": "",
+        "user": "",
+        "pwd": "",
+        "dl_path": ""
+    },
+    "ygg": {
+        "url": "",
+        "user": "",
+        "pwd": ""
+    }
+}

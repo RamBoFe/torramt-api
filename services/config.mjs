@@ -4,9 +4,7 @@ nconf.argv()
   .env({
     separator: '__',
     lowerCase: true,
-  });
-// .file({
-//   file: path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'config.json'),
-// });
+  })
+  .file({ file: 'config.json' });
 
 export default nconf;

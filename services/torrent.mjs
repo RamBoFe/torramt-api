@@ -1,13 +1,14 @@
 import TorrentSearch from 'torrent-search-api';
 import config from './config.mjs';
 
+const SERVER_URL = `${config.get('node:protocol')}://${config.get('node:domain')}:${config.get('node:port')}`;
 const PROVIDERS_CONFIG = [
   {
-    name: 'YggTorrent',
+    name: 'Yggtorrent',
     login: config.get('ygg:user'),
     pass: config.get('ygg:pwd'),
-    domainUrl: 'http://localhost:2223/go?url=',
-    baseUrl: 'http://localhost:2223/go?url=https://www2.yggtorrent.se',
+    domainUrl: `${SERVER_URL}/go?url=`,
+    baseUrl: `${SERVER_URL}/go?url=${config.get('ygg:url')}`,
   },
 ];
 
@@ -16,9 +17,9 @@ const PROVIDERS_CONFIG = [
     if (provider.login && provider.pass) {
       TorrentSearch.enableProvider(provider.name, provider.login, provider.pass);
 
-      if (provider.name === 'YggTorrent') {
+      if (provider.name === 'Yggtorrent') {
         const yggTorrentProvider = TorrentSearch.getProvider('Yggtorrent');
-        yggTorrentProvider.baseUrl = PROVIDERS_CONFIG.find(p => p.name === 'YggTorrent').baseUrl;
+        yggTorrentProvider.baseUrl = PROVIDERS_CONFIG.find(p => p.name === 'Yggtorrent').baseUrl;
         yggTorrentProvider.enableCloudFareBypass = false;
       }
     } else {
@@ -28,26 +29,23 @@ const PROVIDERS_CONFIG = [
 })();
 
 export function getActiveProvidersWithCategories() {
-  const activeProviders = TorrentSearch.getActiveProviders();
-  return activeProviders;
+  return TorrentSearch.getActiveProviders();
 }
 
 export default async function searchTorrents(search, category, ...providersName) {
   const results = await TorrentSearch.search(providersName, search, category);
 
   results.map(torrent => Object.assign(torrent, {
-    desc: `${PROVIDERS_CONFIG.find(p => p.name === 'YggTorrent').domainUrl + torrent.desc}`,
+    desc: `${PROVIDERS_CONFIG.find(p => p.name === 'Yggtorrent').domainUrl + torrent.desc}`,
   }));
 
   return results;
 }
 
-export async function dlTorrentFile(torrent) {
-  const buffer = await TorrentSearch.downloadTorrent(torrent);
-  return buffer;
+export function dlTorrentFile(torrent) {
+  return TorrentSearch.downloadTorrent(torrent);
 }
 
-export async function getTorrentDetails(torrent) {
-  const details = await TorrentSearch.getTorrentDetails(torrent);
-  return details;
+export function getTorrentDetails(torrent) {
+  return TorrentSearch.getTorrentDetails(torrent);
 }

@@ -13,11 +13,17 @@ app.use(cors());
 app.use(bodyParser());
 app.use(routes);
 
-if (config.get('path_certificate')) {
+if (config.get('node:protocol') === 'https') {
   const credentials = {
-    key: fs.readFileSync(`${config.get('path_certificate')}/privkey.pem`, 'utf8'),
-    cert: fs.readFileSync(`${config.get('path_certificate')}/cert.pem`, 'utf8'),
-    ca: fs.readFileSync(`${config.get('path_certificate')}/chain.pem`, 'utf8'),
+    key: config.get('node:https:key')
+      ? fs.readFileSync(config.get('node:https:key'), 'utf8')
+      : undefined,
+    cert: config.get('node:https:cert')
+      ? fs.readFileSync(config.get('node:https:cert'), 'utf8')
+      : undefined,
+    ca: config.get('node:https:ca')
+      ? fs.readFileSync(config.get('node:https:ca'), 'utf8')
+      : undefined,
   };
 
   https.createServer(credentials, app.callback()).listen(PORT);
@@ -25,4 +31,4 @@ if (config.get('path_certificate')) {
   app.listen(PORT);
 }
 
-console.log('Api Torrant en écoute.');
+console.log(`Api Torrant listening on ${config.get('node:protocol')}://${config.get('node:domain')}:${config.get('node:port')}`);

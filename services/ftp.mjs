@@ -2,19 +2,17 @@ import Ssh2SftpClient from 'ssh2-sftp-client';
 import config from './config.mjs';
 
 const FTP_CONFIG = {
-  host: 'alcyoneus.feralhosting.com',
-  port: '22',
+  host: config.get('ftp:host'),
+  port: config.get('ftp:port'),
   username: config.get('ftp:user'),
   password: config.get('ftp:pwd'),
 };
 
-const DEFAULT_PATH = '/media/sdai1/jillnax/private/rtorrent/data';
-
 export default async function list(path = '/') {
   const sftp = new Ssh2SftpClient();
-  await sftp.connect(FTP_CONFIG);
+  await sftp.connect(FTP_CONFIG, 'on');
 
-  const contents = (await sftp.list(`${DEFAULT_PATH}${path}`))
+  const contents = (await sftp.list(`${config.get('ftp:default_path')}${path}`))
     .map(f => (
       {
         type: f.type,
@@ -34,9 +32,9 @@ export default async function list(path = '/') {
 
 export async function del(path, type = 'd') {
   const sftp = new Ssh2SftpClient();
-  await sftp.connect(FTP_CONFIG);
+  await sftp.connect(FTP_CONFIG, 'on');
 
-  const remoteRessource = `${DEFAULT_PATH}/${path}`;
+  const remoteRessource = `${config.get('ftp:default_path')}/${path}`;
 
   if (type === 'd') {
     await sftp.rmdir(remoteRessource, true);

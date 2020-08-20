@@ -4,16 +4,12 @@ import config from '../services/config.mjs';
 
 const router = new Router();
 const nas = new Nas({
-  protocol: 'https',
-  host: 'rambof.synology.me',
-  port: '5001',
+  protocol: config.get('nas:protocol'),
+  host: config.get('nas:host'),
+  port: config.get('nas:port'),
   account: config.get('nas:user'),
   passwd: config.get('nas:pwd'),
 });
-const FTP_USER = config.get('ftp:user');
-const FTP_PWD = config.get('ftp:pwd');
-
-const URI = `ftp://${FTP_USER}:${FTP_PWD}@alcyoneus.feralhosting.com/private/rtorrent/data`;
 
 function createTaskSync(params) {
   return new Promise((resolve, reject) => {
@@ -66,7 +62,9 @@ router.get('/transfert', async (ctx) => {
 
   try {
     await createTaskSync({
-      uri: type !== 'd' ? `${URI}${path}` : `${URI}${path}/`,
+      uri: type !== 'd'
+        ? `${config.get('ftp:uri')}${path}`
+        : `${config.get('ftp:uri')}${path}/`,
       destination: dest,
     });
     ctx.status = 204;
