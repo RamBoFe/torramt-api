@@ -3,15 +3,15 @@ import pick from 'lodash.pick';
 import config from './config.mjs';
 
 const CONFIG = {
-  host: 'alcyoneus.feralhosting.com',
-  username: '',
-  password: config.get('transmission:pwd'),
-  url: '/jillnax/transmission/rpc',
-  port: 443,
-  ssl: true,
+  host: config.get('seedbox:host'),
+  username: config.get('seedbox:user'),
+  password: config.get('seedbox:pwd'),
+  url: config.get('seedbox:url'),
+  port: config.get('seedbox:port'),
+  ssl: (config.get('seedbox:port') === '443'),
 };
 
-const DL_DIR = '/media/sdai1/jillnax/private/rtorrent/data/RamBoF';
+const DL_DIR = config.get('seedbox:dl_path');
 const TransClient = new TransmissionClient.Transmission(CONFIG);
 
 export default async function addTorrentToDl(torrentFile) {
