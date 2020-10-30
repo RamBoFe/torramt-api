@@ -14,12 +14,11 @@ const CONFIG = {
 const DL_DIR = config.get('seedbox:dl_path');
 const TransClient = new TransmissionClient.Transmission(CONFIG);
 
-export default async function addTorrentToDl(torrentFile) {
-  const infos = await TransClient.addBase64(torrentFile.toString('base64'),
+export default function addTorrentToDl(torrentFile) {
+  return TransClient.addBase64(Buffer.from(torrentFile).toString('base64'),
     {
       'download-dir': DL_DIR,
     });
-  return infos;
 }
 
 export async function getTorrents(fields) {

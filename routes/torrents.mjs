@@ -22,7 +22,7 @@ router.get('/search', async (ctx) => {
 router.get('/dl', async (ctx) => {
   let { torrent } = ctx.query;
   torrent = JSON.parse(torrent);
-  const torrentFile = dlTorrentFile(torrent);
+  const torrentFile = await dlTorrentFile(torrent);
   ctx.body = await addTorrentToDl(torrentFile);
 });
 
