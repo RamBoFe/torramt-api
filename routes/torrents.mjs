@@ -26,10 +26,10 @@ router.get('/dl', async (ctx) => {
   ctx.body = await addTorrentToDl(torrentFile);
 });
 
-router.get('/details', (ctx) => {
+router.get('/details', async (ctx) => {
   let { torrent } = ctx.query;
   torrent = JSON.parse(torrent);
-  ctx.body = getTorrentDetails(torrent);
+  ctx.body = await getTorrentDetails(torrent);
 });
 
 router.get('/providers', (ctx) => {
