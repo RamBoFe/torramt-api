@@ -40,7 +40,6 @@ router.all('/', async (ctx) => {
         interceptionId: e.interceptionId,
       }).then((result) => {
         if (result.base64Encoded) {
-          console.log(result.body);
           responseBody = Buffer.from(result.body, 'base64');
         }
       });
@@ -60,19 +59,15 @@ router.all('/', async (ctx) => {
 
   try {
     let response;
+    let tryCount = 0;
     response = await page.goto(url, { timeout: 30000, waitUntil: 'domcontentloaded' });
-    if ((await page.content()).includes('cf-browser-verification')) response = await page.waitForNavigation({ timeout: 30000, waitUntil: 'domcontentloaded' });
-    responseBody = await page.content();
-    responseHeaders = response.headers();
-    const cookies = await page.cookies();
-    if (cookies) {
-      cookies.forEach((cookie) => {
-        const {
-          name, value, secure, expires, domain, ...options
-        } = cookie;
-        ctx.cookies.set(cookie.name, cookie.value, options);
-      });
+    responseBody = await response.text();
+    while (responseBody.includes('cf-browser-verification') && tryCount <= 5) {
+      response = await page.waitForNavigation({ timeout: 30000, waitUntil: 'domcontentloaded' });
+      responseBody = await response.text();
+      tryCount++;
     }
+    responseHeaders = response.headers();
     await page.close();
   } catch (error) {
     if (!error.toString().includes('ERR_BLOCKED_BY_CLIENT')) {
