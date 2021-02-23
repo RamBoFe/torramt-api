@@ -8,7 +8,8 @@ const PROVIDERS_CONFIG = [
     login: config.get('ygg:user'),
     pass: config.get('ygg:pwd'),
     domainUrl: `${SERVER_URL}/go?url=`,
-    baseUrl: `${SERVER_URL}/go?url=${config.get('ygg:url')}`,
+    // baseUrl: `${SERVER_URL}/go?url=${config.get('ygg:url')}`,
+    baseUrl: `${config.get('ygg:url')}`,
   },
 ];
 
@@ -17,10 +18,10 @@ const PROVIDERS_CONFIG = [
     if (provider.login && provider.pass) {
       TorrentSearch.enableProvider(provider.name, provider.login, provider.pass);
 
-      if (provider.name === 'Yggtorrent1') {
+      if (provider.name === 'Yggtorrent') {
         const yggTorrentProvider = TorrentSearch.getProvider('Yggtorrent');
         yggTorrentProvider.baseUrl = PROVIDERS_CONFIG.find(p => p.name === 'Yggtorrent').baseUrl;
-        yggTorrentProvider.enableCloudFareBypass = false;
+        yggTorrentProvider.enableCloudFareBypass = true;
       }
     } else {
       TorrentSearch.enableProvider(provider.name);
@@ -33,13 +34,7 @@ export function getActiveProvidersWithCategories() {
 }
 
 export default async function searchTorrents(search, category, ...providersName) {
-  const results = await TorrentSearch.search(providersName, search, category);
-
-  // results.map(torrent => Object.assign(torrent, {
-  //   desc: `${PROVIDERS_CONFIG.find(p => p.name === 'Yggtorrent').domainUrl + torrent.desc}`,
-  // }));
-
-  return results;
+  return TorrentSearch.search(providersName, search, category);
 }
 
 export function dlTorrentFile(torrent) {
