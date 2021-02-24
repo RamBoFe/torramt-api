@@ -7,7 +7,6 @@ import routes from './routes/index.mjs';
 import config from './services/config.mjs';
 
 const app = new Koa();
-const PORT = 2223;
 
 app.use(cors());
 app.use(bodyParser());
@@ -26,9 +25,9 @@ if (config.get('node:protocol') === 'https') {
       : undefined,
   };
 
-  https.createServer(credentials, app.callback()).listen(PORT);
+  https.createServer(credentials, app.callback()).listen(config.get('node:port'));
 } else {
-  app.listen(PORT);
+  app.listen(config.get('node:port'));
 }
 
 console.log(`Api Torrant listening on ${config.get('node:protocol')}://${config.get('node:domain')}:${config.get('node:port')}`);
