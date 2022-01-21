@@ -3,7 +3,7 @@ import Router from 'koa-router';
 const router = new Router();
 
 router.get('/', async (ctx) => {
-  ctx.body = 'Route test OK !';
+  ctx.body = 'ok';
 });
 
 export default router.routes();

@@ -1,40 +1,22 @@
 import TorrentSearch from 'torrent-search-api';
-import config from './config.mjs';
+import yggOverrideConfig, { setCloudFlareBypass, CONFIG as YGG_CONFIG } from "./ygg.js";
 
-const SERVER_URL = `${config.get('node:protocol')}://${config.get('node:domain')}:${config.get('node:port')}`;
 const PROVIDERS_CONFIG = [
-  {
-    name: 'Yggtorrent',
-    login: config.get('ygg:user'),
-    pass: config.get('ygg:pwd'),
-    domainUrl: `${SERVER_URL}/go?url=`,
-    // baseUrl: `${SERVER_URL}/go?url=${config.get('ygg:url')}`,
-    baseUrl: `${config.get('ygg:url')}`,
-  },
+  YGG_CONFIG
 ];
 
-(() => {
-  PROVIDERS_CONFIG.forEach(async (provider) => {
-    if (provider.login && provider.pass) {
-      TorrentSearch.enableProvider(provider.name, provider.login, provider.pass);
-
-      if (provider.name === 'Yggtorrent') {
-        const yggTorrentProvider = TorrentSearch.getProvider('Yggtorrent');
-        yggTorrentProvider.baseUrl = PROVIDERS_CONFIG.find(p => p.name === 'Yggtorrent').baseUrl;
-        yggTorrentProvider.enableCloudFareBypass = true;
-      }
-    } else {
-      TorrentSearch.enableProvider(provider.name);
-    }
-  });
-})();
+(() => init())();
 
 export function getActiveProvidersWithCategories() {
   return TorrentSearch.getActiveProviders();
 }
 
-export default async function searchTorrents(search, category, ...providersName) {
-  return TorrentSearch.search(providersName, search, category);
+export default async function searchTorrents(search, category, providerName) {
+  if (providerName === 'Yggtorrent') {
+    await setCloudFlareBypass();
+  }
+
+  return TorrentSearch.search([providerName], search, category);
 }
 
 export function dlTorrentFile(torrent) {
@@ -43,4 +25,18 @@ export function dlTorrentFile(torrent) {
 
 export function getTorrentDetails(torrent) {
   return TorrentSearch.getTorrentDetails(torrent);
+}
+
+function init() {
+  PROVIDERS_CONFIG.forEach(async (provider) => {
+    if (provider.login && provider.pass) {
+      TorrentSearch.enableProvider(provider.name, provider.login, provider.pass);
+
+      if (provider.name === 'Yggtorrent') {
+        yggOverrideConfig();
+      }
+    } else {
+      TorrentSearch.enableProvider(provider.name);
+    }
+  });
 }
