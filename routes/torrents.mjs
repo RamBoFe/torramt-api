@@ -12,10 +12,10 @@ const router = new Router();
 
 router.get('/search', async (ctx) => {
   const search = JSON.parse(ctx.query.search);
-  if (!search.searchValue || !search.provider || !search.category) {
-    ctx.throw(400, 'L\' expression recherchée, la catégorie et le fournisseur sont recquis.');
+  if (!search.search || !search.provider || !search.category) {
+    ctx.throw(400, 'L\' expression recherchée, la catégorie et le fournisseur sont requis.');
   }
-  ctx.body = await searchTorrents(search.searchValue, search.category, search.provider);
+  ctx.body = await searchTorrents(search.search, search.category, search.provider);
 });
 
 router.get('/dl', async (ctx) => {

@@ -1,3 +1,4 @@
+import config from './config.mjs';
 import TorrentSearch from 'torrent-search-api';
 import yggOverrideConfig, { setCloudFlareBypass, CONFIG as YGG_CONFIG } from "./ygg.js";
 
@@ -12,7 +13,7 @@ export function getActiveProvidersWithCategories() {
 }
 
 export default async function searchTorrents(search, category, providerName) {
-  if (providerName === 'Yggtorrent') {
+  if (providerName === 'Yggtorrent' && config.get('cloudflare:enable') === 'true') {
     await setCloudFlareBypass();
   }
 
