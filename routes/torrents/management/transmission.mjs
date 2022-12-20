@@ -1,32 +1,21 @@
 import Router from 'koa-router';
 import {
-  getTorrents,
+  list,
   remove,
   start,
   stop,
+  get
 } from '../../../services/transmission.mjs';
-
-const FIELDS = [
-  'id',
-  'name',
-  'status',
-  'totalSize',
-  'hashString',
-  'percentDone',
-  'uploadRatio',
-  'uploadedEver',
-  'downloadedEver',
-  'rateDownload',
-  'rateUpload',
-  'leftUntilDone',
-  'doneDate',
-  'files',
-];
 
 const router = new Router();
 
 router.get('/', async (ctx) => {
-  ctx.body = await getTorrents(FIELDS);
+  ctx.body = await list();
+});
+
+router.get('/:hash', async (ctx) => {
+  const { hash } = ctx.params;
+  ctx.body = await get(hash.split(','));
 });
 
 router.get('/start/:hash', async (ctx) => {

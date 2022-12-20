@@ -14,6 +14,23 @@ const CONFIG = {
 const DL_DIR = config.get('seedbox:dl_path');
 const TransClient = new TransmissionClient.Transmission(CONFIG);
 
+const FIELDS = [
+  'id',
+  'name',
+  'status',
+  'totalSize',
+  'hashString',
+  'percentDone',
+  'uploadRatio',
+  'uploadedEver',
+  'downloadedEver',
+  'rateDownload',
+  'rateUpload',
+  'leftUntilDone',
+  'doneDate',
+  'files',
+];
+
 export default function addTorrentToDl(torrentFile) {
   return TransClient.addBase64(Buffer.from(torrentFile).toString('base64'),
     {
@@ -21,21 +38,29 @@ export default function addTorrentToDl(torrentFile) {
     });
 }
 
-export async function getTorrents(fields) {
-  const { torrents } = await TransClient.get();
+export async function list() {
+  const { torrents } = await TransClient.all();
 
   return torrents.map(
-    torrent => pick(torrent, fields),
+    torrent => pick(torrent, FIELDS),
   ).reverse();
 }
 
-export async function remove(hashString) {
-  return TransClient.remove(hashString, true);
+export async function get(ids) {
+  const { torrents } = await TransClient.get(ids);
+
+  return torrents.map(
+    torrent => pick(torrent, FIELDS),
+  ).reverse();
 }
 
-export async function start(hashString) {
-  return TransClient.start(hashString);
+export async function remove(hash) {
+  return TransClient.remove(hash, true);
 }
-export async function stop(hashString) {
- return TransClient.stop(hashString);
+
+export async function start(hash) {
+  return TransClient.start(hash);
+}
+export async function stop(hash) {
+ return TransClient.stop(hash);
 }
