@@ -21,11 +21,13 @@ export async function setCloudFlareBypass() {
   if (isCloudflareBypassDataMustRefreshed()) {
     const cloudflareBypassData = await getCloudflareByPassData(yggTorrentProvider.baseUrl);
 
-    yggTorrentProvider.headers = {
-      'User-Agent': cloudflareBypassData.userAgent,
-    };
-    yggTorrentProvider.setCookies([
-      cloudflareBypassData.clearance,
-    ]);
+    if (cloudflareBypassData) {
+      yggTorrentProvider.headers = {
+        'User-Agent': cloudflareBypassData.userAgent,
+      };
+      yggTorrentProvider.setCookies([
+        cloudflareBypassData.clearance,
+      ]);
+    }
   }
 }

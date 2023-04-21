@@ -13,7 +13,7 @@ export function getActiveProvidersWithCategories() {
 }
 
 export default async function searchTorrents(search, category, providerName) {
-  if (providerName === 'Yggtorrent' && config.get('cloudflare:enable') === 'true') {
+  if (providerName === 'Yggtorrent') {
     await setCloudFlareBypass();
   }
 

@@ -1,13 +1,7 @@
 {
     "node": {
         "port": "",
-        "domain": "",
-        "protocol": "http",
-        "https": {
-            "key": "",
-            "cert": "",
-            "ca": ""
-        }
+        "domain": ""
     },
     "nas": {
         "protocol": "https",
@@ -36,5 +30,6 @@
         "url": "",
         "user": "",
         "pwd": ""
-    }
+    },
+    "cloudflare_bypass_url": ""
 }
