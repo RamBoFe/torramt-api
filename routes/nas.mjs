@@ -1,50 +1,7 @@
 import Router from 'koa-router';
-import Nas from 'syno';
-import config from '../services/config.mjs';
+import listFiles, { createFolderSync, createTaskSync } from "../services/nas.js";
 
 const router = new Router();
-const nas = new Nas({
-  protocol: config.get('nas:protocol'),
-  host: config.get('nas:host'),
-  port: config.get('nas:port'),
-  account: config.get('nas:user'),
-  passwd: config.get('nas:pwd'),
-});
-
-function createTaskSync(params) {
-  return new Promise((resolve, reject) => {
-    nas.dl.createTask(params, (error, success) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(success);
-      }
-    });
-  });
-}
-function listTasksSync(params) {
-  return new Promise((resolve, reject) => {
-    nas.dl.listTasks(params, (error, success) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(success);
-      }
-    });
-  });
-}
-
-function createFolderSync(params) {
-  return new Promise((resolve, reject) => {
-    nas.fs.createFolder(params, (error, success) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(success);
-      }
-    });
-  });
-}
 
 router.get('/transfert', async (ctx) => {
   const { path, type, createSubFolder } = ctx.query;
@@ -71,6 +28,13 @@ router.get('/transfert', async (ctx) => {
   } catch (e) {
     ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
   }
+});
+
+router.get('/listFiles', async (ctx) => {
+  const { path } = ctx.query;
+  const files = await listFiles({folder_path: path});
+
+  ctx.body = files.files;
 });
 
 export default router.routes();
