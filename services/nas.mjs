@@ -21,6 +21,19 @@ export default function listFiles(params) {
   });
 }
 
+export function listShares() {
+  return new Promise((resolve, reject) => {
+    nas.fs.shareList((error, success) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(success);
+      }
+    });
+  });
+}
+
+
 export function createTaskSync(params) {
   return new Promise((resolve, reject) => {
     nas.dl.createTask(params, (error, success) => {
@@ -55,3 +68,15 @@ export function createFolderSync(params) {
     });
   });
 }
+
+// export function createFolderSync(params) {
+//   return new Promise((resolve, reject) => {
+//     nas.fs.checkExist(params, (error, success) => {
+//       if (error) {
+//         reject(error);
+//       } else {
+//         resolve(success);
+//       }
+//     });
+//   });
+// }

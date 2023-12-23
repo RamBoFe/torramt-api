@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import listFiles, { createFolderSync, createTaskSync } from "../services/nas.js";
+import listFiles, { createFolderSync, createTaskSync, listShares } from "../services/nas.mjs";
 
 const router = new Router();
 
@@ -17,24 +17,25 @@ router.get('/transfert', async (ctx) => {
     dest = `${dest}/${createSubFolder}`;
   }
 
-  try {
-    await createTaskSync({
-      uri: type !== 'd'
-        ? `${config.get('ftp:uri')}${path}`
-        : `${config.get('ftp:uri')}${path}/`,
-      destination: dest,
-    });
-    ctx.status = 204;
-  } catch (e) {
-    ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
-  }
+  // try {
+  //   await createTaskSync({
+  //     uri: type !== 'd'
+  //       ? `${config.get('ftp:uri')}${path}`
+  //       : `${config.get('ftp:uri')}${path}/`,
+  //     destination: dest,
+  //   });
+  //   ctx.status = 204;
+  // } catch (e) {
+  //   ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
+  // }
 });
 
 router.get('/listFiles', async (ctx) => {
   const { path } = ctx.query;
-  const files = await listFiles({folder_path: path});
 
-  ctx.body = files.files;
+  ctx.body = path ?
+    (await listFiles({folder_path: path})).files
+    : (await listShares()).shares.map(file => ({isdir: file.isdir, name: file.name, path: file.path}));
 });
 
 export default router.routes();
