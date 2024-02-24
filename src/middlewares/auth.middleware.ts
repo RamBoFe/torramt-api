@@ -1,4 +1,5 @@
 import { RouterContext } from "koa-router";
+import { ErrorCodeEnum } from "../enums/error-code.enum";
 import HealthRoute from "../routes/health.route.ts";
 import userSrv from "../services/user.service.ts";
 
@@ -17,7 +18,10 @@ async function authMiddleware(
     const isUserAuthorized = await userSrv.isAuthorized(token);
 
     if (!isUserAuthorized) {
-      throw new Error("Vous n'êtes pas autorisé à accéder à cette ressource.");
+      throw {
+        code: ErrorCodeEnum.UNAUTHORIZED,
+        message: "Vous n'êtes pas autorisé à accéder à cette ressource.",
+      };
     }
   }
 

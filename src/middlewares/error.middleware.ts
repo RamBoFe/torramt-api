@@ -1,4 +1,5 @@
 import { RouterContext } from "koa-router";
+import { ErrorCodeEnum } from "../enums/error-code.enum";
 
 /**
  * Errors middleware.
@@ -13,7 +14,7 @@ export async function errorMiddleware(
   try {
     await next();
   } catch (err) {
-    ctx.status = 400;
+    ctx.status = Object.values(ErrorCodeEnum).includes(err.code) ? 401 : 500;
     ctx.body = err;
   }
 }
