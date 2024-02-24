@@ -1,5 +1,5 @@
 import { RouterContext } from "koa-router";
-import { ErrorCodeEnum } from "../enums/error-code.enum";
+import { ErrorCodeEnum } from "../enums/error-code.enum.ts";
 import HealthRoute from "../routes/health.route.ts";
 import userSrv from "../services/user.service.ts";
 
