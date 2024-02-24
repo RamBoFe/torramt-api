@@ -1,6 +1,6 @@
 import firebase from "firebase-admin";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
-import serviceAccount from "../../torramt-831ee-firebase-adminsdk-gjxsj-bbb48d1d66.json" assert { type: "json" };
+import serviceAccount from "../../firebase.service-account.json" assert { type: "json" };
 import { DbCollectionsEnum } from "../enums/db-collections.enum.ts";
 import { UserInterface } from "../interfaces/user.interface";
 
