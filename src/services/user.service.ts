@@ -1,3 +1,5 @@
+import { UserAuthorizedInterface } from "../interfaces/user-authorized.interface";
+import { UserInterface } from "../interfaces/user.interface.ts";
 import firebaseSrv from "./firebase.service.ts";
 
 class UserService {
@@ -8,14 +10,25 @@ class UserService {
    */
   async isAuthorized(token: string): Promise<boolean> {
     const decodedToken = await firebaseSrv.verifyToken(token);
-    if (decodedToken) {
-      const usersAuthorized =
-        await firebaseSrv.listDocumentsInCollection("users");
-      const isUserAuthorized = usersAuthorized.some(
-        (user) => user.email === decodedToken.email,
-      );
+    if (decodedToken && decodedToken.email) {
+      const email = decodedToken.email;
+      const isEmailAuthorized = (
+        await firebaseSrv.getDocumentsInCollection<UserAuthorizedInterface>(
+          firebaseSrv.collections.usersAuthorized,
+        )
+      )[0].emails.includes(email);
 
-      if (!isUserAuthorized) {
+      const userWithThisEmail = (
+        await firebaseSrv.getDocumentsInCollection<UserInterface>(
+          firebaseSrv.collections.users,
+        )
+      ).find((user) => user.email === email);
+
+      if (isEmailAuthorized) {
+        if (!userWithThisEmail) {
+          await firebaseSrv.collections.users.add({ email });
+        }
+      } else {
         return false;
       }
     } else {
