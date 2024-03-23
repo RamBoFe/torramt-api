@@ -1,6 +1,6 @@
 import AbstractRoute from "../models/route.abstact.ts";
-import nasSrv from "../services/nas.service.ts";
 import environment from "../services/environment.service.ts";
+import nasSrv from "../services/nas.service.ts";
 
 interface ListQuery {
   path: string;
@@ -20,7 +20,7 @@ class NasRoute extends AbstractRoute {
 
   private root(): void {
     this.router.get("/transfert", async (ctx) => {
-      const query: Transfert = ctx.query as Transfert;
+      const query: Transfert = ctx.query as unknown as Transfert;
       let dest = query.destination;
       const hasSubFolder = !!query.createSubFolder;
 
@@ -50,12 +50,12 @@ class NasRoute extends AbstractRoute {
 
   private listFiles(): void {
     this.router.get("/listFiles", async (ctx) => {
-      const query: ListQuery = ctx.query as ListQuery;
+      const query: ListQuery = ctx.query as unknown as ListQuery;
 
       ctx.body = query.path
         ? (await nasSrv.listFiles({ folder_path: query.path })).files
         : (await nasSrv.listShares()).shares.map((file) => ({
-            isdir: file.isdir,
+            isdir: file.isDir,
             name: file.name,
             path: file.path,
           }));
