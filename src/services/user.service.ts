@@ -1,41 +1,50 @@
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { UserAuthorizedInterface } from "../interfaces/user-authorized.interface";
 import { UserInterface } from "../interfaces/user.interface.ts";
 import firebaseSrv from "./firebase.service.ts";
+
+export interface Token {
+  valid: boolean;
+  data?: DecodedIdToken;
+}
 
 class UserService {
   /**
    * Determine if a user is authorized to access this resource.
    *
-   * @param token User client token
+   * @param tokenString User client token
    */
-  async isAuthorized(token: string): Promise<boolean> {
-    const decodedToken = await firebaseSrv.verifyToken(token);
+  async checkToken(tokenString: string): Promise<Token> {
+    const decodedToken = await firebaseSrv.verifyToken(tokenString);
+    const token: Token = { valid: false };
+
     if (decodedToken && decodedToken.email) {
       const email = decodedToken.email;
       const isEmailAuthorized = (
-        await firebaseSrv.getDocumentsInCollection<UserAuthorizedInterface>(
+        await firebaseSrv.getDocuments<UserAuthorizedInterface>(
           firebaseSrv.collections.usersAuthorized,
         )
       )[0].emails.includes(email);
 
-      const userWithThisEmail = (
-        await firebaseSrv.getDocumentsInCollection<UserInterface>(
-          firebaseSrv.collections.users,
-        )
-      ).find((user) => user.email === email);
-
       if (isEmailAuthorized) {
-        if (!userWithThisEmail) {
-          await firebaseSrv.collections.users.add({ email });
-        }
-      } else {
-        return false;
+        token.valid = true;
+        token.data = decodedToken;
       }
-    } else {
-      return false;
     }
 
-    return true;
+    return token;
+  }
+
+  /**
+   * Get user data.
+   *
+   * @param id User id
+   */
+  async getUser(id: string): Promise<UserInterface | undefined> {
+    return await firebaseSrv.getDocument<UserInterface>(
+      firebaseSrv.collections.users,
+      id,
+    );
   }
 }
 

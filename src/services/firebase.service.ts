@@ -3,6 +3,7 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import {
   CollectionReference,
   DocumentData,
+  DocumentReference,
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from "firebase-admin/lib/firestore";
@@ -14,6 +15,8 @@ interface CollectionReferenceMap {
   users: CollectionReference<UserInterface>;
   usersAuthorized: CollectionReference<UserAuthorizedInterface>;
 }
+
+const PATH_SEPARATOR = "/";
 
 const converter = <T>(): FirestoreDataConverter<T> => ({
   toFirestore: (data: T): DocumentData => data as DocumentData,
@@ -59,10 +62,8 @@ class FirebaseService {
    *
    * @param collectionRef
    */
-  async getDocumentsInCollection<C>(
-    collectionRef: CollectionReference<C>,
-  ): Promise<C[]> {
-    const docs: C[] = [];
+  async getDocuments<T>(collectionRef: CollectionReference<T>): Promise<T[]> {
+    const docs: T[] = [];
     const docsRef = await collectionRef.listDocuments();
 
     for (const docRef of docsRef) {
@@ -73,6 +74,38 @@ class FirebaseService {
     }
 
     return docs;
+  }
+
+  /**
+   * Get a document data in a collection.
+   * Returns 'undefined' if the document doesn't exist.
+   *
+   * @param collectionRef
+   * @param docId
+   */
+  async getDocument<T>(
+    collectionRef: CollectionReference<T>,
+    docId: string,
+  ): Promise<T | undefined> {
+    return (await this.getDocRef<T>(collectionRef, docId).get()).data();
+  }
+
+  /**
+   * Get a document reference in a collection.
+   *
+   * @param collectionRef
+   * @param docId
+   *
+   * @private
+   */
+  private getDocRef<T>(
+    collectionRef: CollectionReference<T>,
+    docId: string,
+  ): DocumentReference<T> {
+    return this.app
+      .firestore()
+      .doc(`${collectionRef.path}${PATH_SEPARATOR}${docId}`)
+      .withConverter(converter<T>());
   }
 }
 

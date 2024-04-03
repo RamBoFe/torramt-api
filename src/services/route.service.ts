@@ -1,6 +1,6 @@
 import fs from "fs";
-import path from "path";
 import Router from "koa-router";
+import path from "path";
 import AbstractRoute from "../models/route.abstact";
 
 class RouteService {
@@ -50,7 +50,7 @@ class RouteService {
         }
       }
 
-      await folders.forEach((folder) => load(folder, ignoredFolders));
+      folders.forEach((folder) => load(folder, ignoredFolders));
     };
 
     await load(pathRoot, ignoredFolders);

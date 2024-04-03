@@ -1,15 +1,25 @@
+import { ShortcutKeys, UserInterface } from "../interfaces/user.interface.ts";
+import nasMiddleware from "../middlewares/nas.middleware.ts";
 import AbstractRoute from "../models/route.abstact.ts";
 import environment from "../services/environment.service.ts";
-import nasSrv from "../services/nas.service.ts";
+import { NasService } from "../services/nas.service.ts";
+import { Token } from "../services/user.service.ts";
 
 interface ListQuery {
   path: string;
 }
 
-interface Transfert extends ListQuery {
+interface Transfert {
   type: string;
   createSubFolder: string;
-  destination: string;
+  destination: ShortcutKeys;
+  torrentName: string;
+}
+
+interface State {
+  token: Token;
+  user: UserInterface;
+  nasSrv: NasService;
 }
 
 class NasRoute extends AbstractRoute {
@@ -19,27 +29,37 @@ class NasRoute extends AbstractRoute {
   }
 
   private root(): void {
-    this.router.get("/transfert", async (ctx) => {
+    this.router.get("/transfert", nasMiddleware, async (ctx) => {
+      const { nasSrv, user } = ctx.state as State;
       const query: Transfert = ctx.query as unknown as Transfert;
-      let dest = query.destination;
-      const hasSubFolder = !!query.createSubFolder;
+      let dest = user.config.nas.shortcuts[query.destination];
 
-      if (hasSubFolder) {
-        const created = await nasSrv.createFolder({
-          folder_path: `/${dest}`,
-          name: query.createSubFolder,
-        });
-        ctx.assert(created, 500, "Le répertoire n'a pas pu être créé.");
-        dest = `${dest}/${query.createSubFolder}`;
+      if (!query.createSubFolder.startsWith("/")) {
+        query.createSubFolder = `/${query.createSubFolder}`;
       }
 
       try {
+        if (query.createSubFolder) {
+          await nasSrv.createFolder({
+            folder_path: `${dest}`,
+            name: query.createSubFolder.slice(1),
+          });
+
+          dest = `${dest}${query.createSubFolder}`;
+        }
+      } catch (e) {
+        ctx.throw(500, `Le répertoire n'a pas pu être créé (${e}).`);
+      }
+
+      const ftpPath = `${environment.get("ftp:uri")}/${user.config?.seedbox
+        .tag}/${query.torrentName}`;
+
+      try {
         await nasSrv.createTask({
-          uri:
-            query.type !== "d"
-              ? `${environment.get("ftp:uri")}${query.path}`
-              : `${environment.get("ftp:uri")}${query.path}/`,
-          destination: dest,
+          uri: query.type !== "d" ? ftpPath : `${ftpPath}/`,
+          destination: query.createSubFolder.startsWith("/")
+            ? dest.substring(1)
+            : dest,
         });
         ctx.status = 204;
       } catch (e) {
@@ -49,7 +69,8 @@ class NasRoute extends AbstractRoute {
   }
 
   private listFiles(): void {
-    this.router.get("/listFiles", async (ctx) => {
+    this.router.get("/listFiles", nasMiddleware, async (ctx) => {
+      const { nasSrv } = ctx.state as State;
       const query: ListQuery = ctx.query as unknown as ListQuery;
 
       ctx.body = query.path

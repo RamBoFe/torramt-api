@@ -1,12 +1,18 @@
+export type ShortcutKeys = "movies" | "series" | "games" | "softwares";
+
 export interface UserInterface {
   email: string;
-  config?: {
+  config: {
     nas: {
       protocol: "http" | "https";
       host: string;
       port: number;
-      user: string;
-      pwd: string;
+      login: string;
+      password: string;
+      shortcuts: { [k in ShortcutKeys]: string };
+    };
+    seedbox: {
+      tag: string;
     };
   };
 }
