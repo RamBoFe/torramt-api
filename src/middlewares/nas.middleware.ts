@@ -1,6 +1,6 @@
 import { RouterContext } from "koa-router";
+import { UserInterface } from "../interfaces/user.interface.ts";
 import { NasService } from "../services/nas.service.ts";
-import userSrv, { Token } from "../services/user.service.ts";
 
 /**
  * Authentication middleware.
@@ -12,19 +12,20 @@ async function nasMiddleware(
   ctx: RouterContext,
   next: () => Promise<any>,
 ): Promise<void> {
-  const id = (ctx.state.token as Token).data!.uid;
-  const user = await userSrv.getUser(id);
-  if (user && user.config) {
-    const nas = user.config.nas;
-    const nasSrv = new NasService({
-      protocol: nas.protocol,
-      host: nas.host,
-      port: nas.port.toString(),
-      account: nas.login,
-      passwd: nas.password,
-    });
+  if (ctx.state.user) {
+    const user: UserInterface = ctx.state.user;
+    if (user && user.config) {
+      const nas = user.config.nas;
+      const nasSrv = new NasService({
+        protocol: nas.protocol,
+        host: nas.host,
+        port: nas.port.toString(),
+        account: nas.login,
+        passwd: nas.password,
+      });
 
-    ctx.state = { ...ctx.state, nasSrv, user };
+      ctx.state = { ...ctx.state, nasSrv };
+    }
   }
 
   await next();

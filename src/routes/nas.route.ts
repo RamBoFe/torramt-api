@@ -1,5 +1,6 @@
 import { ShortcutKeys, UserInterface } from "../interfaces/user.interface.ts";
 import nasMiddleware from "../middlewares/nas.middleware.ts";
+import userMiddleware from "../middlewares/user.middleware.ts";
 import AbstractRoute from "../models/route.abstact.ts";
 import environment from "../services/environment.service.ts";
 import { NasService } from "../services/nas.service.ts";
@@ -29,58 +30,68 @@ class NasRoute extends AbstractRoute {
   }
 
   private root(): void {
-    this.router.get("/transfert", nasMiddleware, async (ctx) => {
-      const { nasSrv, user } = ctx.state as State;
-      const query: Transfert = ctx.query as unknown as Transfert;
-      let dest = user.config.nas.shortcuts[query.destination];
+    this.router.get(
+      "/transfert",
+      userMiddleware,
+      nasMiddleware,
+      async (ctx) => {
+        const { nasSrv, user } = ctx.state as State;
+        const query: Transfert = ctx.query as unknown as Transfert;
+        let dest = user.config.nas.shortcuts[query.destination];
 
-      if (!query.createSubFolder.startsWith("/")) {
-        query.createSubFolder = `/${query.createSubFolder}`;
-      }
-
-      try {
-        if (query.createSubFolder) {
-          await nasSrv.createFolder({
-            folder_path: `${dest}`,
-            name: query.createSubFolder.slice(1),
-          });
-
-          dest = `${dest}${query.createSubFolder}`;
+        if (!query.createSubFolder.startsWith("/")) {
+          query.createSubFolder = `/${query.createSubFolder}`;
         }
-      } catch (e) {
-        ctx.throw(500, `Le répertoire n'a pas pu être créé (${e}).`);
-      }
 
-      const ftpPath = `${environment.get("ftp:uri")}/${user.config?.seedbox
-        .tag}/${query.torrentName}`;
+        try {
+          if (query.createSubFolder) {
+            await nasSrv.createFolder({
+              folder_path: `${dest}`,
+              name: query.createSubFolder.slice(1),
+            });
 
-      try {
-        await nasSrv.createTask({
-          uri: query.type !== "d" ? ftpPath : `${ftpPath}/`,
-          destination: query.createSubFolder.startsWith("/")
-            ? dest.substring(1)
-            : dest,
-        });
-        ctx.status = 204;
-      } catch (e) {
-        ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
-      }
-    });
+            dest = `${dest}${query.createSubFolder}`;
+          }
+        } catch (e) {
+          ctx.throw(500, `Le répertoire n'a pas pu être créé (${e}).`);
+        }
+
+        const ftpPath = `${environment.get("ftp:uri")}/${user.config?.seedbox
+          .tag}/${query.torrentName}`;
+
+        try {
+          await nasSrv.createTask({
+            uri: query.type !== "d" ? ftpPath : `${ftpPath}/`,
+            destination: query.createSubFolder.startsWith("/")
+              ? dest.substring(1)
+              : dest,
+          });
+          ctx.status = 204;
+        } catch (e) {
+          ctx.throw(500, `Impossible de transférer la ressource (${e}).`);
+        }
+      },
+    );
   }
 
   private listFiles(): void {
-    this.router.get("/listFiles", nasMiddleware, async (ctx) => {
-      const { nasSrv } = ctx.state as State;
-      const query: ListQuery = ctx.query as unknown as ListQuery;
+    this.router.get(
+      "/listFiles",
+      userMiddleware,
+      nasMiddleware,
+      async (ctx) => {
+        const { nasSrv } = ctx.state as State;
+        const query: ListQuery = ctx.query as unknown as ListQuery;
 
-      ctx.body = query.path
-        ? (await nasSrv.listFiles({ folder_path: query.path })).files
-        : (await nasSrv.listShares()).shares.map((file) => ({
-            isdir: file.isDir,
-            name: file.name,
-            path: file.path,
-          }));
-    });
+        ctx.body = query.path
+          ? (await nasSrv.listFiles({ folder_path: query.path })).files
+          : (await nasSrv.listShares()).shares.map((file) => ({
+              isdir: file.isDir,
+              name: file.name,
+              path: file.path,
+            }));
+      },
+    );
   }
 }
 

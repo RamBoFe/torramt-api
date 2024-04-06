@@ -1,5 +1,6 @@
 import { RouterContext } from "koa-router";
 import { ErrorCodeEnum } from "../enums/error-code.enum.ts";
+import FtpRoute from "../routes/ftp.route.ts";
 import HealthRoute from "../routes/health.route.ts";
 import NasRoute from "../routes/nas.route.ts";
 import userSrv from "../services/user.service.ts";
@@ -25,7 +26,10 @@ async function authMiddleware(
       };
     }
 
-    if (ctx.url.startsWith(NasRoute.rootPath)) {
+    if (
+      ctx.url.startsWith(NasRoute.rootPath) ||
+      ctx.url.startsWith(FtpRoute.rootPath)
+    ) {
       ctx.state = {
         token,
       };
