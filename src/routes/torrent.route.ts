@@ -1,3 +1,5 @@
+import userMiddleware from "../middlewares/user.middleware.ts";
+import yggMiddleware from "../middlewares/ygg.middleware.ts";
 import AbstractRoute from "../models/route.abstact.ts";
 import torrentSrv from "../services/torrent.service.ts";
 import transmissionSrv from "../services/transmission.service.ts";
@@ -35,7 +37,7 @@ class TorrentRoute extends AbstractRoute {
   }
 
   private download(): void {
-    this.router.get("/dl", async (ctx) => {
+    this.router.get("/dl", userMiddleware, yggMiddleware, async (ctx) => {
       const torrentFile = await torrentSrv.dlTorrentFile(
         JSON.parse((ctx.query as DownloadQuery).torrent),
       );
@@ -44,7 +46,7 @@ class TorrentRoute extends AbstractRoute {
   }
 
   private details() {
-    this.router.get("/details", async (ctx) => {
+    this.router.get("/details", userMiddleware, yggMiddleware, async (ctx) => {
       ctx.body = await torrentSrv.getTorrentDetails(
         JSON.parse((ctx.query as DownloadQuery).torrent),
       );

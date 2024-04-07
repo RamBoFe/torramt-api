@@ -1,15 +1,11 @@
-import TorrentSearch from "torrent-search-api";
+import TorrentSearch, { Torrent, TorrentProvider } from "torrent-search-api";
 import cloudflareSrv from "./cloudflare.service.ts";
-import { TorrentProvider, Torrent } from "torrent-search-api";
 import environment from "./environment.service.ts";
 
 export interface TorrentProviderConfig {
   name: string;
   isActive: boolean;
-  auth?: {
-    login: string;
-    pass: string;
-  };
+  isAuth: boolean;
   override?: TorrentProvider;
 }
 
@@ -21,11 +17,11 @@ class TorrentService {
   private init() {
     for (const providerConf of environment.get("providers")) {
       if (providerConf.isActive) {
-        if (providerConf.auth) {
+        if (providerConf.isAuth) {
           TorrentSearch.enableProvider(
             providerConf.name,
-            providerConf.auth.login,
-            providerConf.auth.pass,
+            "username",
+            "password",
           );
 
           if (providerConf.override) {
@@ -56,6 +52,10 @@ class TorrentService {
 
   getActiveProvidersWithCategories(): TorrentProvider[] {
     return TorrentSearch.getActiveProviders();
+  }
+
+  getProvider(name: string): TorrentProvider {
+    return TorrentSearch.getProvider(name);
   }
 
   async searchTorrents(

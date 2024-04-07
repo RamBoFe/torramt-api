@@ -3,6 +3,7 @@ import { ErrorCodeEnum } from "../enums/error-code.enum.ts";
 import FtpRoute from "../routes/ftp.route.ts";
 import HealthRoute from "../routes/health.route.ts";
 import NasRoute from "../routes/nas.route.ts";
+import TorrentRoute from "../routes/torrent.route.ts";
 import userSrv from "../services/user.service.ts";
 
 /**
@@ -28,7 +29,8 @@ async function authMiddleware(
 
     if (
       ctx.url.startsWith(NasRoute.rootPath) ||
-      ctx.url.startsWith(FtpRoute.rootPath)
+      ctx.url.startsWith(FtpRoute.rootPath) ||
+      ctx.url.startsWith(TorrentRoute.rootPath)
     ) {
       ctx.state = {
         token,

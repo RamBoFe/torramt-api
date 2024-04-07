@@ -29,7 +29,8 @@ declare module "torrent-search-api" {
     headers: any; // FIXME {key:[string]}
     magnetSelector: string;
     autoFixUnstableUrl: boolean;
-
+    username: string;
+    password: string;
     setCookies(cookies: string[]): void;
   }
 

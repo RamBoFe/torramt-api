@@ -14,5 +14,9 @@ export interface UserInterface {
     seedbox: {
       tag: string;
     };
+    ygg: {
+      login: string;
+      password: string;
+    };
   };
 }
